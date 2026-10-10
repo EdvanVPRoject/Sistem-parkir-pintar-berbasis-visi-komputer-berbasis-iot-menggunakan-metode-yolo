@@ -80,7 +80,36 @@ flowchart TD
 
 ---
 
-## 🧠 Pipeline Computer Vision & Kecerdasan Buatan
+## 📊 Hasil Evaluasi & Grafik Pelatihan Model (Bab 4 Skripsi)
+
+Berdasarkan hasil pengujian pada dokumen skripsi:
+
+### 1. Evaluasi Model YOLOv8 Nano (Lokalisasi Plat)
+- **Dataset:** 500 citra kendaraan roda dua ([Roboflow Dataset](https://universe.roboflow.com/best-zwljf/tugasakhir-rvuug)).
+- **Hasil Metrik:**
+  - **Precision:** 98,03%
+  - **Recall:** 95,90%
+  - **mAP@0.50:** 98,51%
+  - **mAP@0.50:0.95:** 92,99%
+  - **Akurasi Deteksi Lapangan (30 Kendaraan):** 100% (30/30 pelat berhasil dilokalisasi).
+
+![Grafik Pelatihan YOLOv8](assets/images/Grafik_Pelatihan_YOLOv8.png)
+*Gambar: Grafik Box Loss & Mean Average Precision (mAP) YOLOv8 (Gambar 4.8 Skripsi)*
+
+---
+
+### 2. Evaluasi Model CNN (Klasifikasi Karakter OCR)
+- **Dataset:** 47.985 citra karakter dalam 36 kelas alfanumerik `0-9` dan `A-Z` ([Kaggle Dataset](https://www.kaggle.com/datasets/caasperart/haarcascadeplatenumber)).
+- **Hasil Metrik:**
+  - **Training Accuracy:** 94,46% (Loss: 0,1936)
+  - **Validation Accuracy:** 88,07% (Loss: 0,6317)
+  - **Akurasi Pengenalan Pelat Utuh Lapangan (End-to-End):** 83,33% (25/30 pelat terbaca 100% tepat).
+
+![Grafik Pelatihan OCR CNN](assets/images/Grafik_Pelatihan_OCR_CNN.jpg)
+*Gambar: Grafik Akurasi & Loss Pelatihan vs Validasi CNN (Gambar 4.10 Skripsi)*
+
+---
+
 
 1. **Deteksi Plat (YOLOv8)**:
    - Menggunakan bobot terlatih `best.pt` dengan confidence threshold `0.5`.
