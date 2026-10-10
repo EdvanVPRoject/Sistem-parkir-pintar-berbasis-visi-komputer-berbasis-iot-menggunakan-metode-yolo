@@ -260,8 +260,8 @@ SistemParkir/
 
 ### 1. Clone Repositori
 ```powershell
-git clone https://github.com/USERNAME/SistemParkir.git
-Set-Location SistemParkir
+git clone https://github.com/EdvanNr/Sistem-parkir-pintar-berbasis-visi-komputer-berbasis-iot-menggunakan-metode-yolo-.git
+Set-Location Sistem-parkir-pintar-berbasis-visi-komputer-berbasis-iot-menggunakan-metode-yolo-
 ```
 
 ### 2. Buat dan Aktifkan Virtual Environment
