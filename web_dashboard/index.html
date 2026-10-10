@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard TA - Sistem Parkir Pintar Berbasis IoT dan Computer Vision Menggunakan Metode YOLO</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Bagian Header Dasbor -->
+  <header class="navbar">
+    <div class="logo-container">
+      <h1>Dashboard Sistem Parkir Pintar</h1>
+      <p>Sistem Autentikasi Ganda (RFID + OCR YOLOv8) & Hybrid Database</p>
+    </div>
+    <div class="status-koneksi">
+      <span class="dot-online"></span> Connected to Firebase Cloud
+    </div>
+  </header>
+
+  <!-- Wadah Utama Konten -->
+  <main class="container">
+    
+    <!-- Bagian 1: Log Peringatan Keamanan -->
+    <section class="card security-section">
+      <div class="card-header header-red">
+        <h2>🛡️ Log Status & Peringatan Keamanan</h2>
+        <span class="badge-alert">Lapisan Keamanan Aktif</span>
+      </div>
+      <div class="card-body">
+        <p class="desc-text">Merekam rekam jejak insiden penolakan akses (seperti ketidakcocokan UID RFID dengan Plat Nomor) sebagai bukti pembuktian fungsi keamanan ganda pada Bab 4.</p>
+        <div id="panel-log-keamanan" class="log-grid">
+          <div class="log-empty">Memuat aktivitas keamanan dari server...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bagian 2: Tabel Parkir Aktif (Sedang di Dalam) -->
+    <section class="card">
+      <div class="card-header header-blue">
+        <h2>Data Kendaraan Parkir Aktif (Sedang di Dalam)</h2>
+        <span class="badge-count" id="count-aktif">0 Kendaraan</span>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>UID RFID</th>
+              <th>Plat Nomor Kendaraan</th>
+              <th>Waktu Masuk</th>
+              <th>Status Gerbang</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-parkir-aktif">
+            <tr><td colspan="5" class="text-center">Menyiapkan sinkronisasi tabel parkir_aktif...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Bagian 3: Tabel Riwayat Parkir (Selesai) -->
+    <section class="card">
+      <div class="card-header header-green">
+        <h2>📜 Data Riwayat Parkir (Log Transaksi Selesai)</h2>
+        <span class="badge-count" id="count-riwayat">0 Transaksi</span>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>UID RFID</th>
+              <th>Plat Nomor</th>
+              <th>Waktu Masuk</th>
+              <th>Waktu Keluar</th>
+              <th>Status</th>
+              <th>Bukti Visual</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-riwayat">
+            <tr><td colspan="7" class="text-center">Menyiapkan sinkronisasi tabel riwayat_parkir...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal / Popup untuk Melihat Foto Tangkapan Plat Nomor -->
+  <div id="modal-foto" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="tutupModal()">&times;</span>
+      <h3>Bukti Tangkapan Kamera (Crop Plat Nomor)</h3>
+      <div class="modal-image-container">
+        <img id="img-bukti" src="" alt="Bukti Plat Nomor">
+      </div>
+      <p id="modal-keterangan" class="modal-text"></p>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- LOGIKA JAVASCRIPT & FIREBASE SDK v12.16.0                         -->
+  <!-- ================================================================= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+
+    // Kredensial Firebase Proyek Anda
+    const firebaseConfig = {
+      apiKey: "AIzaSyAdvbZunuC01maJJH0qrlCzLq9L2pyiYE8",
+      authDomain: "taparkir-4d34d.firebaseapp.com",
+      databaseURL: "https://taparkir-4d34d-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "taparkir-4d34d",
+      storageBucket: "taparkir-4d34d.firebasestorage.app",
+      messagingSenderId: "769803267773",
+      appId: "1:769803267773:web:26d47c968abed0db0211d4",
+      measurementId: "G-HPG2DZT1W9"
+    };
+
+    // Inisialisasi Layanan
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getDatabase(app);
+
+    // 1. Sinkronisasi Data Parkir Aktif
+    const parkirAktifRef = ref(db, 'parkir_aktif');
+    onValue(parkirAktifRef, (snapshot) => {
+      const data = snapshot.val();
+      const tbody = document.getElementById('tbody-parkir-aktif');
+      const badgeCount = document.getElementById('count-aktif');
+      tbody.innerHTML = '';
+
+      if (data) {
+        const keys = Object.keys(data);
+        badgeCount.innerText = `${keys.length} Kendaraan`;
+        
+        keys.forEach((key, index) => {
+          const row = data[key];
+          tbody.innerHTML += `
+            <tr>
+              <td>${index + 1}</td>
+              <td><span class="tag-rfid">${row.rfid_uid || '-'}</span></td>
+              <td><span class="tag-plat">${row.plat_nomor || '-'}</span></td>
+              <td>${row.waktu_masuk || '-'}</td>
+              <td><span class="badge badge-in">DI DALAM</span></td>
+            </tr>
+          `;
+        });
+      } else {
+        badgeCount.innerText = "0 Kendaraan";
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada kendaraan di dalam area kampus/parkir saat ini.</td></tr>';
+      }
+    });
+
+    // 2. Sinkronisasi Data Riwayat Parkir (Selesai)
+    const riwayatRef = ref(db, 'riwayat_parkir');
+    onValue(riwayatRef, (snapshot) => {
+      const data = snapshot.val();
+      const tbody = document.getElementById('tbody-riwayat');
+      const badgeCount = document.getElementById('count-riwayat');
+      tbody.innerHTML = '';
+
+      if (data) {
+        const keys = Object.keys(data);
+        badgeCount.innerText = `${keys.length} Transaksi`;
+        
+        // Balik urutan array agar transaksi terbaru berada di baris paling atas
+        const reversedKeys = keys.reverse();
+
+        reversedKeys.forEach((key, index) => {
+          const row = data[key];
+          
+          let tombolFoto = '<span class="text-muted">Tanpa Foto</span>';
+          if (row.foto_url) {
+            tombolFoto = `<button class="btn-foto" onclick="bukaModal('${row.foto_url}', '${row.plat_nomor}')">📷 Lihat Crop</button>`;
+          }
+
+          tbody.innerHTML += `
+            <tr>
+              <td>${index + 1}</td>
+              <td><span class="tag-rfid">${row.rfid_uid || '-'}</span></td>
+              <td><span class="tag-plat">${row.plat_nomor || '-'}</span></td>
+              <td>${row.waktu_masuk || '-'}</td>
+              <td>${row.waktu_keluar || '-'}</td>
+              <td><span class="badge badge-out">${row.status || 'SELESAI'}</span></td>
+              <td>${tombolFoto}</td>
+            </tr>
+          `;
+        });
+      } else {
+        badgeCount.innerText = "0 Transaksi";
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center">Belum ada riwayat transaksi parkir.</td></tr>';
+      }
+    });
+
+    // 3. Sinkronisasi Log Status Keamanan & Peringatan
+    const logKeamananRef = ref(db, 'log_keamanan');
+    onValue(logKeamananRef, (snapshot) => {
+      const data = snapshot.val();
+      const panelLog = document.getElementById('panel-log-keamanan');
+      panelLog.innerHTML = '';
+
+      if (data) {
+        const keys = Object.keys(data).reverse().slice(0, 6); // Tampilkan 6 insiden terbaru
+        
+        keys.forEach((key) => {
+          const row = data[key];
+          const isDitolak = row.keterangan && row.keterangan.includes('Ditolak');
+          const cardClass = isDitolak ? 'log-card danger' : 'log-card info';
+          const icon = isDitolak ? '🚨' : 'ℹ️';
+
+          panelLog.innerHTML += `
+            <div class="${cardClass}">
+              <div class="log-top">
+                <span class="log-icon">${icon}</span>
+                <span class="log-time">${row.waktu || '-'}</span>
+              </div>
+              <div class="log-body">
+                <strong>${row.keterangan || 'Aktivitas Gerbang'}</strong>
+                <p>RFID: <code>${row.rfid_uid || '-'}</code> | Plat: <code>${row.plat_nomor || '-'}</code></p>
+              </div>
+            </div>
+          `;
+        });
+      } else {
+        panelLog.innerHTML = '<div class="log-empty">Aman. Belum ada catatan insiden keamanan atau penolakan akses.</div>';
+      }
+    });
+  </script>
+
+  <!-- Skrip Kontrol Modal/Popup Foto -->
+  <script>
+    function bukaModal(url, plat) {
+      document.getElementById('img-bukti').src = url;
+      document.getElementById('modal-keterangan').innerText = "Plat Nomor Terdeteksi: " + plat;
+      document.getElementById('modal-foto').style.display = "block";
+    }
+
+    function tutupModal() {
+      document.getElementById('modal-foto').style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('modal-foto');
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>

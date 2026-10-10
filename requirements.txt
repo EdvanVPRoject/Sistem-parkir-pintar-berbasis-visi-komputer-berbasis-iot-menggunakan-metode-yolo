@@ -1,0 +1,24 @@
+# ====================================================================
+# Dependency Sistem Parkir Pintar (Dual Authentication IoT + CV)
+# ====================================================================
+
+# 1. Computer Vision & Pengolahan Citra
+opencv-python>=4.8.0
+numpy>=1.23.0
+
+# 2. Deep Learning & Model AI
+# Catatan TensorFlow: Sesuaikan dengan driver NVIDIA/CUDA jika memakai GPU
+tensorflow>=2.10.0
+ultralytics>=8.0.0
+
+# 3. Antarmuka Grafis Desktop (GUI)
+PyQt6>=6.4.0
+
+# 4. Komunikasi Hardware Serial (ESP32 RFID)
+pyserial>=3.5
+
+# 5. Cloud Database & Sinkronisasi
+firebase-admin>=6.2.0
+
+# 6. Analisis & Visualisasi Data Evaluasi (Scripts)
+matplotlib>=3.7.0

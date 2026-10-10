@@ -1,0 +1,302 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #0f172a;
+  color: #f8fafc;
+  padding-bottom: 40px;
+}
+
+/* Navbar & Header */
+.navbar {
+  background-color: #1e293b;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px solid #3b82f6;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+}
+
+.logo-container h1 {
+  font-size: 20px;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+}
+
+.logo-container p {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.status-koneksi {
+  background-color: #064e3b;
+  color: #34d399;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #059669;
+}
+
+.dot-online {
+  width: 10px;
+  height: 10px;
+  background-color: #34d399;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px #34d399;
+}
+
+/* Layout Kontainer Utama */
+.container {
+  max-width: 1280px;
+  margin: 30px auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* Kartu / Seksi Dasbor */
+.card {
+  background-color: #1e293b;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #334155;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+}
+
+.card-header {
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #334155;
+}
+
+.header-blue { background-color: #1d4ed8; }
+.header-green { background-color: #15803d; }
+.header-red { background-color: #b91c1c; }
+
+.card-header h2 {
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.badge-count, .badge-alert {
+  background-color: rgba(0,0,0,0.3);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.desc-text {
+  font-size: 13px;
+  color: #cbd5e1;
+  margin-bottom: 15px;
+}
+
+/* Grid Log Peringatan Keamanan */
+.log-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 15px;
+}
+
+.log-card {
+  padding: 12px 15px;
+  border-radius: 8px;
+  border-left: 5px solid;
+  background-color: #0f172a;
+}
+
+.log-card.danger {
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.log-card.info {
+  border-color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.log-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.log-body strong {
+  font-size: 14px;
+  color: #f8fafc;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.log-body p {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.log-body code {
+  background-color: #334155;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #38bdf8;
+  font-weight: bold;
+}
+
+/* Tabel Data */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.data-table th {
+  background-color: #0f172a;
+  color: #94a3b8;
+  padding: 12px 15px;
+  font-weight: 600;
+  border-bottom: 2px solid #334155;
+}
+
+.data-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #334155;
+  color: #e2e8f0;
+}
+
+.data-table tr:hover {
+  background-color: rgba(255,255,255,0.03);
+}
+
+.text-center { text-align: center; }
+.text-muted { color: #64748b; font-style: italic; }
+
+/* Tag Visual & Badge Status */
+.tag-rfid {
+  background-color: #334155;
+  color: #a5f3fc;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.tag-plat {
+  background-color: #f59e0b;
+  color: #000000;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: 800;  
+  letter-spacing: 1px;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.badge-in { background-color: #065f46; color: #34d399; border: 1px solid #059669; }
+.badge-out { background-color: #1e3a8a; color: #60a5fa; border: 1px solid #2563eb; }
+
+.btn-foto {
+  background-color: #38bdf8;
+  color: #0f172a;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-foto:hover {
+  background-color: #0284c7;
+  color: #ffffff;
+}
+
+/* Modal / Popup Foto */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.8);
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background-color: #1e293b;
+  margin: 10% auto;
+  padding: 25px;
+  border: 1px solid #38bdf8;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 10px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #94a3b8;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-btn:hover { color: #ef4444; }
+
+.modal-content h3 {
+  margin-bottom: 15px;
+  color: #38bdf8;
+  font-size: 18px;
+}
+
+.modal-image-container {
+  background-color: #0f172a;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  border: 1px dashed #475569;
+}
+
+#img-bukti {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.modal-text {
+  font-size: 14px;
+  color: #f8fafc;
+  font-weight: bold;
+}
