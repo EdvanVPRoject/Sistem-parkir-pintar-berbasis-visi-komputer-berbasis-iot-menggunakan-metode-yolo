@@ -1,5 +1,6 @@
 # 🚗 Sistem Parkir Pintar (Dual-Layer Authentication: IoT RFID + Computer Vision ALPR)
 
+[![Live Web Dashboard](https://img.shields.io/badge/Live_Dashboard-taparkir--4d34d.web.app-blue?style=for-the-badge&logo=firebase)](https://taparkir-4d34d.web.app/)
 [![Python Version](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11-blue.svg)](https://www.python.org/)
 [![GUI](https://img.shields.io/badge/GUI-PyQt6-green.svg)](https://riverbankcomputing.com/software/pyqt/)
 [![AI-ObjectDetection](https://img.shields.io/badge/YOLO-v8-yellow.svg)](https://github.com/ultralytics/ultralytics)
@@ -8,12 +9,16 @@
 [![Database](https://img.shields.io/badge/Database-SQLite%20%2B%20Firebase%20RTDB-brightgreen.svg)](https://firebase.google.com/)
 [![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 
-Aplikasi desktop cerdas berbasis **Windows** untuk otomasi gerbang parkir dengan sistem **Keamanan Autentikasi Ganda (*Dual-Layer Authentication*)**: mencocokkan identitas kartu **RFID (IoT ESP32)** dengan **Plat Nomor Kendaraan (Computer Vision: YOLOv8 + CNN OCR)**, didukung arsitektur **Hybrid Database** (Offline-First SQLite lokal + Cloud Firebase Realtime Database) serta **Web Monitoring Dashboard**.
+Aplikasi desktop cerdas berbasis **Windows** untuk otomasi gerbang parkir dengan sistem **Keamanan Autentikasi Ganda (*Dual-Layer Authentication*)**: memvalidasi identitas kartu **RFID e-KTP (IoT ESP32)** dengan **Plat Nomor Kendaraan (Computer Vision: YOLOv8 + CNN OCR)**, didukung arsitektur **Hybrid Database** (Offline-First SQLite lokal + Cloud Firebase Realtime Database) serta **Web Monitoring Dashboard**.
+
+🌐 **Akses Dashboard Web Real-time:** [https://taparkir-4d34d.web.app/](https://taparkir-4d34d.web.app/)
 
 ---
 
 ## 📌 Daftar Isi
+- [Live Web Monitoring](#-live-web-monitoring)
 - [Arsitektur Sistem](#-arsitektur-sistem)
+- [Hasil Evaluasi & Grafik Pelatihan Model (Bab 4 Skripsi)](#-hasil-evaluasi--grafik-pelatihan-model-bab-4-skripsi)
 - [Fitur Utama](#-fitur-utama)
 - [Pipeline Computer Vision & Kecerdasan Buatan](#-pipeline-computer-vision--kecerdasan-buatan)
 - [Struktur Repositori](#-struktur-repositori)
@@ -21,9 +26,21 @@ Aplikasi desktop cerdas berbasis **Windows** untuk otomasi gerbang parkir dengan
 - [Panduan Instalasi & Penggunaan](#-panduan-instalasi--penggunaan)
 - [Konfigurasi Firebase](#-konfigurasi-firebase)
 - [Integrasi Perangkat Keras (ESP32 RFID)](#-integrasi-perangkat-keras-esp32-rfid)
-- [Dashboard Web Monitoring](#-dashboard-web-monitoring)
 - [Skrip Penelitian Bab 4 Skripsi](#-skrip-penelitian-bab-4-skripsi)
 - [Troubleshooting](#-troubleshooting)
+
+---
+
+## 🌐 Live Web Monitoring
+
+Sistem terhubung langsung ke cloud untuk kebutuhan monitoring jarak jauh:
+
+👉 **URL Dashboard Resmi:** [https://taparkir-4d34d.web.app/](https://taparkir-4d34d.web.app/)
+
+Fitur pemantauan pada website:
+1. **Panel Log & Peringatan Keamanan**: Merekam insiden penolakan akses secara *real-time* (misalnya jika kartu RFID ditap pada kendaraan yang berbeda dari data saat masuk).
+2. **Panel Kendaraan Parkir Aktif**: Menampilkan jumlah dan daftar kendaraan yang saat ini sedang berada di dalam area parkir.
+3. **Panel Riwayat Transaksi**: Mencatat seluruh histori masuk dan keluar kendaraan beserta bukti foto tangkapan kamera.
 
 ---
 
@@ -32,14 +49,14 @@ Aplikasi desktop cerdas berbasis **Windows** untuk otomasi gerbang parkir dengan
 ```mermaid
 flowchart TD
     subgraph IoT["Perangkat Keras IoT"]
-        A[Kartu RFID] -->|Tap| B[Sensor MFRC522]
+        A[Kartu RFID e-KTP] -->|Tap| B[Sensor MFRC522]
         B -->|SPI| C[ESP32 Microcontroller]
         C -->|Serial USB 115200| D[Backend Python]
     end
 
     subgraph Vision["Computer Vision & AI"]
         Cam[Kamera 1080p] -->|Frame Real-time| D
-        D -->|Lokalisasi Plat| YOLO["YOLOv8 (best.pt)"]
+        D -->|Lokalisasi Plat| YOLO["YOLOv8 Nano (best.pt)"]
         YOLO -->|Plat Crop| Preprocess["Pre-processing: CLAHE + PCA Deskewing"]
         Preprocess -->|Karakter Satuan| CNN["Keras CNN (best_ocr_model.h5)"]
         CNN -->|Voting & FSM Koreksi| PlateResult["Hasil Plat Nomor Valid"]
@@ -50,7 +67,7 @@ flowchart TD
         Match -->|Masuk: Plat Baru| AllowIn["✅ Gerbang Masuk Buka"]
         Match -->|Masuk: Plat Sudah Ada| DenyIn["⛔ Akses Ditolak (Kloning Plat)"]
         Match -->|Keluar: Plat Cocok| AllowOut["✅ Gerbang Keluar Buka"]
-        Match -->|Keluar: Plat Beda| DenyOut["⛔ Akses Ditolak (Pencurian)"]
+        Match -->|Keluar: Plat Beda| DenyOut["⛔ Akses Ditolak (Pencegahan Pencurian)"]
     end
 
     subgraph Storage["Penyimpanan Hybrid"]
@@ -61,65 +78,78 @@ flowchart TD
 
     subgraph UI["Antarmuka Pengguna"]
         D --> GUI["Desktop GUI PyQt6"]
-        Cloud --> Web["Web Monitoring Dashboard"]
+        Cloud --> Web["Web Monitoring Dashboard (taparkir-4d34d.web.app)"]
     end
 ```
 
 ---
 
-## ✨ Fitur Utama
-
-1. **Autentikasi Ganda (*Dual Authentication*)**: Mencegah kecurangan tiket/kartu hilang dengan memvalidasi pasangan identitas RFID dan visual plat nomor kendaraan.
-2. **Anti-Tapping Palsu (*Anti-Passback*)**: Menolak akses masuk jika plat nomor yang sama terdeteksi masih berada di dalam area parkir.
-3. **Pencegahan Pencurian Kendaraan**: Saat keluar, sistem memverifikasi apakah plat nomor kendaraan yang keluar 100% cocok dengan plat saat kartu tersebut pertama kali masuk.
-4. **Offline-First SQLite**: Sistem gerbang tetap bekerja lancar dan cepat tanpa ketergantungan koneksi internet.
-5. **Real-time Cloud Sync (Firebase)**: Otomatis mengirim data transaksi dan representasi foto Base64 ke Firebase Realtime Database saat terhubung internet.
-6. **GUI Modern PyQt6 (Multi-threaded)**: Video streaming 60/30 FPS lancar di thread terpisah (`QThread`) tanpa freeze saat inferensi AI.
-7. **Simulasi Tap RFID**: Tersedia tombol simulasi tap pada GUI untuk pengujian alur perangkat lunak tanpa modul hardware.
-8. **Web Dashboard Terintegrasi**: Dashboard berbasis web untuk memantau kendaraan aktif, riwayat transaksi, dan rekaman peringatan keamanan dari mana saja.
-
----
-
 ## 📊 Hasil Evaluasi & Grafik Pelatihan Model (Bab 4 Skripsi)
 
-Berdasarkan hasil pengujian pada dokumen skripsi:
+Seluruh metrik dan grafik berikut diambil langsung dari data pengujian resmi pada dokumen laporan Tugas Akhir / Skripsi:
 
-### 1. Evaluasi Model YOLOv8 Nano (Lokalisasi Plat)
-- **Dataset:** 500 citra kendaraan roda dua ([Roboflow Dataset](https://universe.roboflow.com/best-zwljf/tugasakhir-rvuug)).
-- **Hasil Metrik:**
-  - **Precision:** 98,03%
-  - **Recall:** 95,90%
-  - **mAP@0.50:** 98,51%
-  - **mAP@0.50:0.95:** 92,99%
-  - **Akurasi Deteksi Lapangan (30 Kendaraan):** 100% (30/30 pelat berhasil dilokalisasi).
+### Ringkasan Metrik Kinerja Sistem
+
+| Komponen Pengujian | Metrik Evaluasi | Nilai Capaian | Keterangan |
+| :--- | :--- | :---: | :--- |
+| **YOLOv8 Nano** (Lokalisasi Plat) | **Precision** | **98,03%** | Tingkat ketepatan deteksi bounding box |
+| | **Recall** | **95,90%** | Tingkat keberhasilan menemukan objek pelat |
+| | **mAP@0.50** | **98,51%** | Rata-rata presisi pada threshold IoU 0,50 |
+| | **mAP@0.50:0.95** | **92,99%** | Rata-rata presisi pada rentang IoU ketat |
+| | **Keberhasilan Deteksi Lapangan** | **100,00%** | 30 dari 30 pelat uji berhasil dilokalisasi |
+| | **Training Box Loss** | **0,29206** | Penurunan kesalahan posisi box selama pelatihan |
+| | **Validation Box Loss** | **0,39947** | Tingkat kestabilan validasi |
+| **OCR CNN** (Klasifikasi Karakter) | **Training Accuracy** | **94,46%** | Tingkat akurasi pada data latih (Loss: 0,1936) |
+| | **Validation Accuracy** | **88,07%** | Akurasi klasifikasi karakter individual (Loss: 0,6317) |
+| | **Pengenalan Pelat Utuh Lapangan** | **83,33%** | 25 dari 30 kendaraan terbaca utuh 100% benar |
+| **RFID RC522 (ESP32)** | **Keberhasilan Baca UID** | **100,00%** | 55 dari 55 pengujian berhasil (11 UID berbeda) |
+| | **Rata-rata Waktu Respons** | **5,64 ms** | Rentang waktu pembacaan cepat antara 5–6 ms |
+| **Autentikasi Ganda** | **Kesesuaian Logika 4 Skenario** | **100,00%** | Masuk/Keluar/Ditolak sesuai aturan keamanan |
+
+---
+
+### 1. Grafik Hasil Pelatihan YOLOv8 Nano (Gambar 4.8 Skripsi)
+- **Dataset Latih:** 500 citra kendaraan roda dua ([Roboflow Dataset](https://universe.roboflow.com/best-zwljf/tugasakhir-rvuug)).
+- Menggambarkan penurunan *Box Loss* dan kenaikan *Mean Average Precision* (mAP@0.50: 98,51%, mAP@0.50:0.95: 92,99%) selama 100 epoch.
 
 ![Grafik Pelatihan YOLOv8](assets/images/Grafik_Pelatihan_YOLOv8.png)
-*Gambar: Grafik Box Loss & Mean Average Precision (mAP) YOLOv8 (Gambar 4.8 Skripsi)*
+*Gambar 4.8: Grafik Box Loss & Mean Average Precision (mAP) YOLOv8 Nano*
 
 ---
 
-### 2. Evaluasi Model CNN (Klasifikasi Karakter OCR)
-- **Dataset:** 47.985 citra karakter dalam 36 kelas alfanumerik `0-9` dan `A-Z` ([Kaggle Dataset](https://www.kaggle.com/datasets/caasperart/haarcascadeplatenumber)).
-- **Hasil Metrik:**
-  - **Training Accuracy:** 94,46% (Loss: 0,1936)
-  - **Validation Accuracy:** 88,07% (Loss: 0,6317)
-  - **Akurasi Pengenalan Pelat Utuh Lapangan (End-to-End):** 83,33% (25/30 pelat terbaca 100% tepat).
+### 2. Grafik Hasil Pelatihan OCR CNN (Gambar 4.10 Skripsi)
+- **Dataset Latih:** 47.985 citra karakter dalam 36 kelas alfanumerik `0-9` dan `A-Z` ([Kaggle Dataset](https://www.kaggle.com/datasets/caasperart/haarcascadeplatenumber)).
+- Menggambarkan perkembangan *Training Accuracy* (mencapai 94,46%) dan *Validation Accuracy* (mencapai 88,07%), serta grafik *Loss*.
 
 ![Grafik Pelatihan OCR CNN](assets/images/Grafik_Pelatihan_OCR_CNN.jpg)
-*Gambar: Grafik Akurasi & Loss Pelatihan vs Validasi CNN (Gambar 4.10 Skripsi)*
+*Gambar 4.10: Grafik Akurasi & Loss Pelatihan vs Validasi Model CNN*
 
 ---
 
+## ✨ Fitur Utama
 
-1. **Deteksi Plat (YOLOv8)**:
+1. **Autentikasi Ganda (*Dual Authentication*)**: Mencegah kecurangan kartu hilang/ditukar dengan mencocokkan identitas UID RFID dan identitas visual plat kendaraan.
+2. **Anti-Tapping Palsu (*Anti-Passback*)**: Menolak akses masuk jika plat nomor yang sama terdeteksi masih tercatat berada di dalam area parkir.
+3. **Pencegahan Pencurian Kendaraan**: Saat keluar, sistem memverifikasi apakah plat kendaraan yang keluar 100% cocok dengan plat saat kartu tersebut pertama kali masuk.
+4. **Offline-First SQLite**: Sistem gerbang tetap bekerja lancar dan cepat tanpa ketergantungan koneksi internet.
+5. **Real-time Cloud Sync (Firebase)**: Otomatis mengirim data transaksi dan representasi foto Base64 ke Firebase Realtime Database saat terhubung internet.
+6. **GUI Modern PyQt6 (Multi-threaded)**: Video streaming real-time di thread terpisah (`QThread`) tanpa freeze saat inferensi AI.
+7. **Simulasi Tap RFID**: Tombol simulasi tap pada GUI untuk pengujian alur perangkat lunak tanpa modul hardware.
+8. **Perlindungan Privasi**: Data sensitif pada dokumentasi disamarkan untuk keamanan dan kepatuhan privasi data.
+
+---
+
+## 🧠 Pipeline Computer Vision & Kecerdasan Buatan
+
+1. **Deteksi Plat (YOLOv8 Nano)**:
    - Menggunakan bobot terlatih `best.pt` dengan confidence threshold `0.5`.
-   - Mengambil bounding box dengan area terbesar (kendaraan paling dekat gerbang).
+   - Mengambil bounding box dengan area terbesar (kendaraan paling depan/dekat gerbang).
 2. **Prapemrosesan Citra Tingkat Lanjut**:
    - **Pemotongan Margin**: Menghilangkan 3% sisi kiri dan 1.5% sisi kanan plat untuk membuang bingkai putih yang berpotensi keliru terbaca huruf `'I'`.
    - **CLAHE (*Contrast Limited Adaptive Histogram Equalization*)**: Meratakan kontras pada kondisi plat kusam atau pencahayaan ekstrem.
    - **Otsu Binarization**: Segmentasi adaptif hitam-putih.
-   - **Auto-Deskewing (PCA)**: Menghitung vektor kemiringan karakter menggunakan *Principal Component Analysis* dan merotasi otomatis jika kemiringan berkisar antara 3° s/d 40°.
-   - **Y-Axis Median Alignment**: Memfilter kontur baut, emblem, atau logo Korlantas berdasarkan ketinggian median karakter utama.
+   - **Auto-Deskewing (PCA)**: Menghitung sudut kemiringan karakter menggunakan *Principal Component Analysis* dan merotasi otomatis (rentang 3° s/d 40°).
+   - **Y-Axis Median Alignment**: Memfilter kontur baut, emblem, atau logo berdasarkan ketinggian median karakter utama.
 3. **Pengenalan Karakter (CNN Keras)**:
    - Klasifikasi 36 kelas karakter alphanumeric (`0-9` dan `A-Z`) menggunakan `best_ocr_model.h5`.
    - Normalisasi kanvas 28×28 piksel dengan *proportional padding* 4 piksel agar ujung lengkungan angka tidak terpotong.
@@ -136,10 +166,10 @@ Berdasarkan hasil pengujian pada dokumen skripsi:
 SistemParkir/
 ├── MainProgramTA.py                    # Backend core: MesinParkirThread, AI, IoT, DB
 ├── main_gui.py                         # Frontend GUI desktop (PyQt6)
-├── best.pt                             # Model deteksi plat nomor (YOLOv8)
+├── best.pt                             # Model deteksi plat nomor (YOLOv8 Nano)
 ├── best_ocr_model.h5                   # Model OCR karakter plat (CNN Keras)
 ├── requirements.txt                    # Daftar dependency Python
-├── .gitignore                          # Aturan ignore file rahasia & temporer
+├── .gitignore                          # Aturan ignore file kredensial, DB lokal, dan cache
 ├── LICENSE                             # Lisensi proyek (MIT)
 ├── README.md                           # Dokumentasi utama proyek
 │
@@ -163,17 +193,16 @@ SistemParkir/
 │   ├── fonts/                          # Font plat nomor untuk pengujian
 │   │   ├── font_plat.ttf
 │   │   └── font_plat_standar.ttf
-│   └── images/                         # Grafik hasil evaluasi Bab 4
-│       ├── Grafik_Evaluasi_Final.png
-│       ├── Grafik_Evaluasi_GPU.png
-│       └── grafik_pelatihan_ocr.png
+│   └── images/                         # Grafik resmi hasil pelatihan (Bab 4 Skripsi)
+│       ├── Grafik_Pelatihan_YOLOv8.png # Gambar 4.8 Skripsi (Box Loss & mAP)
+│       └── Grafik_Pelatihan_OCR_CNN.jpg# Gambar 4.10 Skripsi (Akurasi & Loss CNN)
 │
 ├── scripts/                            # Skrip penelitian Bab 4 Skripsi
 │   ├── README.md                       # Dokumentasi skrip penelitian
-│   ├── train_ocr.py                    # Pelatihan model CNN OCR (test.py)
-│   ├── balance_dataset.py              # Augmentasi dataset karakter (dataseimbang.py)
-│   ├── pengujian_bab4.py               # GUI pengambilan data pengujian (uji.py)
-│   └── dashboard_analisis.py           # Dashboard analisis computer vision (analisis.py)
+│   ├── train_ocr.py                    # Pelatihan model CNN OCR
+│   ├── balance_dataset.py              # Augmentasi dataset karakter seimbang
+│   ├── pengujian_bab4.py               # GUI pengambilan data pengujian Bab 4
+│   └── dashboard_analisis.py           # Dashboard analisis computer vision
 │
 └── hasil_capture/                      # Direktori penyimpanan foto bukti masuk/keluar
     └── .gitkeep
@@ -184,15 +213,15 @@ SistemParkir/
 ## 💻 Kebutuhan Perangkat
 
 ### Software
-- **Sistem Operasi**: Windows 10 / 11 (64-bit direkomendasikan).
+- **Sistem Operasi**: Windows 10 / 11 (64-bit).
 - **Python**: Python 3.9, 3.10, atau 3.11.
 - **Arduino IDE**: Versi 2.0+ (dengan board ESP32 & library MFRC522 terpasang).
 - **Driver USB**: CP210x atau CH340 sesuai modul USB-to-UART pada ESP32 Anda.
 
 ### Hardware
-- **Webcam / Kamera USB**: Resolusi minimal 720p (disarankan 1080p).
+- **Webcam / Kamera USB**: Resolusi 1080p disarankan (minimal 720p).
 - **Mikrokontroler**: ESP32 DevKit V1 (30 atau 38 pin).
-- **Modul RFID**: MFRC522 13.56 MHz + Kartu/Tag RFID Mifare 1K.
+- **Modul RFID**: MFRC522 13.56 MHz + Kartu e-KTP / Tag RFID Mifare 1K.
 - **Kabel Jumper & Kabel Data USB**.
 
 ---
@@ -227,9 +256,9 @@ Salin file template konfigurasi ke root direktori proyek:
 ```powershell
 Copy-Item .\config\kunci-firebase.json.example .\kunci-firebase.json
 ```
-Buka file `kunci-firebase.json` dan ganti isinya dengan kunci privat Service Account dari proyek Firebase Console Anda (lihat [Konfigurasi Firebase](#-konfigurasi-firebase)).
+Isi file `kunci-firebase.json` dengan kunci privat Service Account dari Firebase Console Anda (lihat [Konfigurasi Firebase](#-konfigurasi-firebase)).
 
-### 5. Jalankan Aplikasi
+### 5. Jalankan Aplikasi Desktop
 Pastikan kamera dan ESP32 sudah terhubung, lalu jalankan:
 ```powershell
 python main_gui.py
@@ -242,10 +271,10 @@ python main_gui.py
 Proyek ini menggunakan **Firebase Realtime Database** untuk sinkronisasi data cloud.
 
 1. Buka [Firebase Console](https://console.firebase.google.com/) dan buat proyek baru.
-2. Buat **Realtime Database** pada lokasi `asia-southeast1` (Singapura) dengan mode pengujian (*test mode*) atau aturan baca-tulis autentikasi.
+2. Buat **Realtime Database** pada lokasi `asia-southeast1` (Singapura) dengan aturan baca-tulis yang sesuai.
 3. Buka **Project Settings** > **Service accounts**.
-4. Klik **Generate new private key**, lalu simpan file JSON tersebut dengan nama `kunci-firebase.json` di root folder aplikasi ini.
-5. ⚠️ **PERINGATAN KEAMANAN:** File `kunci-firebase.json` asli sudah dimasukkan ke `.gitignore` agar tidak pernah ter-commit ke GitHub publik.
+4. Klik **Generate new private key**, lalu simpan file JSON tersebut dengan nama `kunci-firebase.json` di root folder aplikasi.
+5. ⚠️ **PERINGATAN KEAMANAN:** File `kunci-firebase.json` asli secara otomatis diabaikan oleh `.gitignore` sehingga tidak akan terunggah ke repositori publik.
 
 ---
 
@@ -256,40 +285,24 @@ Hubungkan pin modul **MFRC522** ke **ESP32** sesuai tabel berikut:
 | Pin RC522 | Pin ESP32 | Keterangan |
 |-----------|-----------|------------|
 | 3.3V      | 3.3V      | ⚠️ **Jangan hubungkan ke 5V!** |
-| RST       | GPIO 22   | Reset |
-| GND       | GND       | Ground |
+| RST       | GPIO 22   | Reset Pin |
+| GND       | GND       | Ground Bersama |
 | MISO      | GPIO 19   | VSPI MISO |
 | MOSI      | GPIO 23   | VSPI MOSI |
 | SCK       | GPIO 18   | VSPI SCK |
-| SDA (SS)  | GPIO 21   | Slave Select |
+| SDA (SS)  | GPIO 21   | Slave Select (SS) |
 
 Buka sketch pada `arduino/esp32_rfid/esp32_rfid.ino` di Arduino IDE, lalu upload ke board ESP32 Anda. Penjelasan lengkap tersedia di [arduino/README.md](arduino/README.md).
 
 ---
 
-## 🌐 Dashboard Web Monitoring
-
-Dashboard web yang berada di folder `web_dashboard/` dapat dijalankan secara lokal atau di-deploy ke Firebase Hosting:
-
-### Menjalankan Lokal:
-Cukup buka file `web_dashboard/index.html` langsung melalui browser web Anda.
-
-### Deploy ke Firebase Hosting:
-```powershell
-npm install -g firebase-tools
-firebase login
-firebase deploy --only hosting
-```
-
----
-
 ## 🧪 Skrip Penelitian Bab 4 Skripsi
 
-Untuk mereproduksi hasil pelatihan atau pengujian pada laporan Skripsi/Tugas Akhir:
+Untuk mereproduksi hasil pelatihan atau pengujian:
 
 - `python scripts/train_ocr.py` : Melatih model CNN untuk mengenali karakter plat nomor.
-- `python scripts/balance_dataset.py` : Menyeimbangkan dataset karakter sebelum training.
-- `python scripts/pengujian_bab4.py` : GUI khusus untuk mengambil foto uji Bab 4 (YOLO, OCR, Gabungan).
+- `python scripts/balance_dataset.py` : Menyeimbangkan dataset karakter sebelum pelatihan.
+- `python scripts/pengujian_bab4.py` : GUI khusus pengambilan data pengujian evaluasi.
 - `python scripts/dashboard_analisis.py` : Dashboard visual untuk menganalisis akurasi segmentasi citra.
 
 Dokumentasi rinci skrip ini dapat dibaca di [scripts/README.md](scripts/README.md).
