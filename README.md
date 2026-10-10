@@ -84,45 +84,75 @@ flowchart TD
 
 ---
 
-## 📊 Hasil Evaluasi & Grafik Pelatihan Model (Bab 4 Skripsi)
+## 📊 Angka-Angka Hasil Pengujian Sistem (Bab 4 Skripsi)
 
-Seluruh metrik dan grafik berikut diambil langsung dari data pengujian resmi pada dokumen laporan Tugas Akhir / Skripsi:
+Seluruh angka hasil pengujian di bawah ini diambil langsung dari hasil evaluasi resmi pada laporan Tugas Akhir:
 
-### Ringkasan Metrik Kinerja Sistem
-
-| Komponen Pengujian | Metrik Evaluasi | Nilai Capaian | Keterangan |
-| :--- | :--- | :---: | :--- |
-| **YOLOv8 Nano** (Lokalisasi Plat) | **Precision** | **98,03%** | Tingkat ketepatan deteksi bounding box |
-| | **Recall** | **95,90%** | Tingkat keberhasilan menemukan objek pelat |
-| | **mAP@0.50** | **98,51%** | Rata-rata presisi pada threshold IoU 0,50 |
-| | **mAP@0.50:0.95** | **92,99%** | Rata-rata presisi pada rentang IoU ketat |
-| | **Keberhasilan Deteksi Lapangan** | **100,00%** | 30 dari 30 pelat uji berhasil dilokalisasi |
-| | **Training Box Loss** | **0,29206** | Penurunan kesalahan posisi box selama pelatihan |
-| | **Validation Box Loss** | **0,39947** | Tingkat kestabilan validasi |
-| **OCR CNN** (Klasifikasi Karakter) | **Training Accuracy** | **94,46%** | Tingkat akurasi pada data latih (Loss: 0,1936) |
-| | **Validation Accuracy** | **88,07%** | Akurasi klasifikasi karakter individual (Loss: 0,6317) |
-| | **Pengenalan Pelat Utuh Lapangan** | **83,33%** | 25 dari 30 kendaraan terbaca utuh 100% benar |
-| **RFID RC522 (ESP32)** | **Keberhasilan Baca UID** | **100,00%** | 55 dari 55 pengujian berhasil (11 UID berbeda) |
-| | **Rata-rata Waktu Respons** | **5,64 ms** | Rentang waktu pembacaan cepat antara 5–6 ms |
-| **Autentikasi Ganda** | **Kesesuaian Logika 4 Skenario** | **100,00%** | Masuk/Keluar/Ditolak sesuai aturan keamanan |
-
----
-
-### 1. Grafik Hasil Pelatihan YOLOv8 Nano (Gambar 4.8 Skripsi)
-- **Dataset Latih:** 500 citra kendaraan roda dua ([Roboflow Dataset](https://universe.roboflow.com/best-zwljf/tugasakhir-rvuug)).
-- Menggambarkan penurunan *Box Loss* dan kenaikan *Mean Average Precision* (mAP@0.50: 98,51%, mAP@0.50:0.95: 92,99%) selama 100 epoch.
+### 1. Hasil Pengujian Model YOLOv8 Nano (Gambar 4.8 Skripsi)
 
 ![Grafik Pelatihan YOLOv8](assets/images/Grafik_Pelatihan_YOLOv8.png)
 *Gambar 4.8: Grafik Box Loss & Mean Average Precision (mAP) YOLOv8 Nano*
 
+| Metrik Evaluasi | Nilai Numerik | Persentase | Keterangan |
+| :--- | :---: | :---: | :--- |
+| **Precision** | `0,98034` | **98,03%** | Tingkat ketepatan deteksi bounding box |
+| **Recall** | `0,95897` | **95,90%** | Tingkat keberhasilan menemukan area plat |
+| **mAP@0.50** | `0,98508` | **98,51%** | Rata-rata presisi pada threshold IoU 0,50 |
+| **mAP@0.50:0.95** | `0,92985` | **92,99%** | Rata-rata presisi pada rentang IoU 0,50 s/d 0,95 |
+| **Training Box Loss (Akhir)** | `0,29206` | - | Nilai error posisi box pada data training |
+| **Validation Box Loss (Akhir)** | `0,39947` | - | Nilai error posisi box pada data validasi |
+| **Keberhasilan Deteksi (50 Data Testing)** | `50 / 50` | **100,00%** | Seluruh citra uji berhasil dilokalisasi |
+
 ---
 
-### 2. Grafik Hasil Pelatihan OCR CNN (Gambar 4.10 Skripsi)
-- **Dataset Latih:** 47.985 citra karakter dalam 36 kelas alfanumerik `0-9` dan `A-Z` ([Kaggle Dataset](https://www.kaggle.com/datasets/caasperart/haarcascadeplatenumber)).
-- Menggambarkan perkembangan *Training Accuracy* (mencapai 94,46%) dan *Validation Accuracy* (mencapai 88,07%), serta grafik *Loss*.
+### 2. Hasil Pengujian Model OCR CNN (Gambar 4.10 Skripsi)
 
 ![Grafik Pelatihan OCR CNN](assets/images/Grafik_Pelatihan_OCR_CNN.jpg)
 *Gambar 4.10: Grafik Akurasi & Loss Pelatihan vs Validasi Model CNN*
+
+| Metrik Evaluasi | Nilai Numerik | Persentase | Keterangan |
+| :--- | :---: | :---: | :--- |
+| **Training Accuracy (Akhir)** | `0,9446` | **94,46%** | Akurasi klasifikasi pada data latih |
+| **Validation Accuracy (Akhir)** | `0,8807` | **88,07%** | Akurasi klasifikasi karakter individual |
+| **Training Loss (Akhir)** | `0,1936` | - | Nilai loss error data latih |
+| **Validation Loss (Akhir)** | `0,6317` | - | Nilai loss error data validasi |
+
+---
+
+### 3. Hasil Pengujian Sistem Terintegrasi Lapangan (Tabel 4.5 Skripsi)
+
+| Parameter Pengujian | Jumlah Sampel | Persentase | Status |
+| :--- | :---: | :---: | :--- |
+| **Total Pengujian Lapangan** | `30` | **100,00%** | Pengujian langsung menggunakan kamera gerbang |
+| **Pelat Berhasil Dideteksi YOLO** | `30` | **100,00%** | 30 dari 30 plat berhasil dilokalisasi |
+| **Pelat Gagal Dideteksi YOLO** | `0` | **0,00%** | Tidak ada kegagalan deteksi bounding box |
+| **Pengenalan Pelat Utuh Sesuai (OCR Benar)** | `25` | **83,33%** | 25 dari 30 pelat dikenali utuh tanpa salah karakter |
+| **Pengenalan Pelat Tidak Sesuai (OCR Gagal)** | `5` | **16,67%** | Kesalahan minor pada karakter mirip |
+
+---
+
+### 4. Hasil Pengujian Modul RFID RC522 & ESP32 (Tabel 4.1 & 4.2 Skripsi)
+
+| Parameter Pengujian | Nilai Capaian | Keterangan |
+| :--- | :---: | :--- |
+| **Jumlah Sampel UID e-KTP Berbeda** | `11 UID` | Pengujian multi-kartu identitas |
+| **Total Pengujian Berulang** | `55 kali` | Setiap kartu diuji sebanyak 5 kali |
+| **Pembacaan Berhasil** | `55 kali (100,00%)` | Seluruh pembacaan sukses tanpa kegagalan |
+| **Pembacaan Gagal** | `0 kali (0,00%)` | Keandalan hardware sempurna |
+| **Waktu Respons Minimum** | `5,00 ms` | Kecepatan pembacaan tercepat |
+| **Waktu Respons Maksimum** | `6,00 ms` | Kecepatan pembacaan terlambat |
+| **Rata-rata Waktu Respons** | **5,64 ms** | Rata-rata transmisi serial ESP32 ke laptop |
+
+---
+
+### 5. Hasil Pengujian Integrasi Autentikasi Ganda (Tabel 4.6 Skripsi)
+
+| No | Skenario Pengujian Gerbang | Respon yang Diharapkan | Respon Aktual Sistem | Status |
+| :-: | :--- | :--- | :--- | :-: |
+| 1 | UID baru + Plat nomor belum aktif | Akses Masuk Diterima | Akses Masuk Diterima | **Sesuai (100%)** |
+| 2 | UID baru + Plat nomor sudah ada di dalam | Akses Ditolak (Anti-Passback) | Akses Ditolak | **Sesuai (100%)** |
+| 3 | UID aktif + Plat saat keluar sesuai saat masuk | Akses Keluar Diterima | Akses Keluar Diterima | **Sesuai (100%)** |
+| 4 | UID aktif + Plat saat keluar beda saat masuk | Akses Ditolak (Anti-Pencurian) | Akses Ditolak | **Sesuai (100%)** |
 
 ---
 
