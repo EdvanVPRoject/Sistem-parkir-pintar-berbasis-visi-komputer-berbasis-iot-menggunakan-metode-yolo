@@ -401,7 +401,7 @@ class MesinParkirThread(QThread):
                 rfid_trigger = True
                 self.simulasi_rfid_uid = ""
 
-            # JIKA ADA MOBIL TAP KARTU
+            # JIKA PENGENDARA MOTOR TAP KARTU
             if rfid_trigger:
                 self.sinyal_log.emit(f"\n[!] TAP KARTU RFID TERDETEKSI: {last_rfid}")
                 self.sinyal_status_utama.emit("🔍 MEMVALIDASI PLAT NOMOR...", "#89b4fa")
