@@ -62,7 +62,7 @@ Seluruh arsitektur, diagram blok, alur perangkat keras, flowchart, dan rancangan
 Menggambarkan hubungan antara perangkat masukan (*input*), unit pemrosesan utama (*proses*), penyimpanan data hybrid (*database*), dan media keluaran (*output*):
 
 <p align="center">
-  <img src="assets/images/Gambar_3_1_Blok_Diagram.png" alt="Gambar 3.1 Blok Diagram Sistem" width="750"/>
+  <img src="https://taparkir-4d34d.web.app/assets/images/Gambar_3_1_Blok_Diagram.png" alt="Gambar 3.1 Blok Diagram Sistem" width="750"/>
 </p>
 
 *Gambar 3.1: Blok Diagram Sistem Keseluruhan*
@@ -74,7 +74,7 @@ Menggambarkan hubungan antara perangkat masukan (*input*), unit pemrosesan utama
 Menunjukkan integrasi komunikasi fisik antara kartu e-KTP, sensor pembaca RFID, mikrokontroler, kamera, dan komputer:
 
 <p align="center">
-  <img src="assets/images/Gambar_3_2_Alur_Perangkat_Keras.png" alt="Gambar 3.2 Alur Perangkat Keras" width="750"/>
+  <img src="https://taparkir-4d34d.web.app/assets/images/Gambar_3_2_Alur_Perangkat_Keras.png" alt="Gambar 3.2 Alur Perangkat Keras" width="750"/>
 </p>
 
 *Gambar 3.2: Alur Komunikasi Antarperangkat Keras*
@@ -92,7 +92,7 @@ Menunjukkan integrasi komunikasi fisik antara kartu e-KTP, sensor pembaca RFID, 
 Menggambarkan alur logika eksekusi perangkat lunak dari mulai deteksi kendaraan hingga keputusan pembukaan gerbang:
 
 <p align="center">
-  <img src="assets/images/Gambar_3_3_Diagram_Alir_Sistem_Utama.png" alt="Gambar 3.3 Diagram Alir Sistem Utama" width="500"/>
+  <img src="https://taparkir-4d34d.web.app/assets/images/Gambar_3_3_Diagram_Alir_Sistem_Utama.png" alt="Gambar 3.3 Diagram Alir Sistem Utama" width="500"/>
 </p>
 
 *Gambar 3.3: Diagram Alir Sistem Utama (Flowchart)*
@@ -108,7 +108,7 @@ Tahap pengenalan karakter dilakukan melalui pipeline bertahap:
 4. **Langkah 4: Hasil Klasifikasi** (Inferensi CNN 36 kelas karakter alfanumerik `0-9` dan `A-Z`).
 
 <p align="center">
-  <img src="assets/images/Gambar_3_6_Alur_Pengenalan_Karakter_CNN.png" alt="Gambar 3.6 Alur Pra-pemrosesan, Segmentasi, dan Pengenalan Karakter CNN" width="750"/>
+  <img src="https://taparkir-4d34d.web.app/assets/images/Gambar_3_6_Alur_Pengenalan_Karakter_CNN.png" alt="Gambar 3.6 Alur Pra-pemrosesan, Segmentasi, dan Pengenalan Karakter CNN" width="750"/>
 </p>
 
 *Gambar 3.6: Alur Pra-pemrosesan, Segmentasi, dan Pengenalan Karakter CNN*
@@ -125,7 +125,7 @@ Arsitektur model CNN yang digunakan:
 - **Output Layer**: Dense 36 neuron dengan fungsi aktivasi **Softmax**.
 
 <p align="center">
-  <img src="assets/images/Gambar_3_7_Arsitektur_Model_CNN.png" alt="Gambar 3.7 Arsitektur Model CNN untuk Klasifikasi Karakter" width="750"/>
+  <img src="https://taparkir-4d34d.web.app/assets/images/Gambar_3_7_Arsitektur_Model_CNN.png" alt="Gambar 3.7 Arsitektur Model CNN untuk Klasifikasi Karakter" width="750"/>
 </p>
 
 *Gambar 3.7: Arsitektur Model CNN untuk Klasifikasi Karakter*
@@ -137,7 +137,7 @@ Arsitektur model CNN yang digunakan:
 Memperbaiki kesalahan klasifikasi visual huruf dan angka yang mirip berdasarkan struktur Tanda Nomor Kendaraan Bermotor (TNKB) Indonesia (Kode Wilayah $\rightarrow$ Nomor Registrasi $\rightarrow$ Huruf Seri):
 
 <p align="center">
-  <img src="assets/images/Gambar_3_8_Diagram_Alir_Rule_Based_Correction.png" alt="Gambar 3.8 Diagram Alir Rule-Based Correction" width="750"/>
+  <img src="https://taparkir-4d34d.web.app/assets/images/Gambar_3_8_Diagram_Alir_Rule_Based_Correction.png" alt="Gambar 3.8 Diagram Alir Rule-Based Correction" width="750"/>
 </p>
 
 *Gambar 3.8: Diagram Alir Logika Rule-Based Correction*
@@ -151,7 +151,7 @@ Memperbaiki kesalahan klasifikasi visual huruf dan angka yang mirip berdasarkan 
 Struktur data NoSQL pada Firebase Realtime Database dibagi menjadi 3 node utama:
 
 <p align="center">
-  <img src="assets/images/Gambar_3_9_Struktur_Tabel_Firebase.png" alt="Gambar 3.9 Struktur Tabel Firebase" width="650"/>
+  <img src="https://taparkir-4d34d.web.app/assets/images/Gambar_3_9_Struktur_Tabel_Firebase.png" alt="Gambar 3.9 Struktur Tabel Firebase" width="650"/>
 </p>
 
 *Gambar 3.9: Struktur Node Data pada Firebase Realtime Database*
@@ -169,7 +169,7 @@ Seluruh angka hasil pengujian di bawah ini diambil langsung dari hasil evaluasi 
 ### 1. Hasil Pengujian Model YOLOv8 Nano (Gambar 4.8 Skripsi)
 
 <p align="center">
-  <img src="assets/images/Grafik_Pelatihan_YOLOv8.png" alt="Gambar 4.8 Grafik Hasil Pelatihan Model YOLOv8" width="750"/>
+  <img src="https://taparkir-4d34d.web.app/assets/images/Grafik_Pelatihan_YOLOv8.png" alt="Gambar 4.8 Grafik Hasil Pelatihan Model YOLOv8" width="750"/>
 </p>
 
 *Gambar 4.8: Grafik Box Loss & Mean Average Precision (mAP) YOLOv8 Nano*
@@ -189,7 +189,7 @@ Seluruh angka hasil pengujian di bawah ini diambil langsung dari hasil evaluasi 
 ### 2. Hasil Pengujian Model OCR CNN (Gambar 4.10 Skripsi)
 
 <p align="center">
-  <img src="assets/images/Grafik_Pelatihan_OCR_CNN.png" alt="Gambar 4.10 Grafik Hasil Pelatihan Model OCR CNN" width="750"/>
+  <img src="https://taparkir-4d34d.web.app/assets/images/Grafik_Pelatihan_OCR_CNN.png" alt="Gambar 4.10 Grafik Hasil Pelatihan Model OCR CNN" width="750"/>
 </p>
 
 *Gambar 4.10: Grafik Akurasi & Loss Pelatihan vs Validasi Model CNN*
