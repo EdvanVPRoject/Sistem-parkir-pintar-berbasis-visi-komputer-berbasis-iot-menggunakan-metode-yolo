@@ -6,7 +6,7 @@ Folder ini berisi firmware mikrokontroler ESP32 untuk membaca kartu RFID (MFRC52
 
 | Pin RFID RC522 | Pin ESP32 (DevKit v1) | Keterangan |
 |----------------|-----------------------|------------|
-| **3.3V** | **3.3V** | ⚠️ **PENTING:** Jangan hubungkan ke 5V karena akan merusak modul RC522! |
+| **3.3V** | **3.3V** |  **PENTING:** Jangan hubungkan ke 5V karena akan merusak modul RC522! |
 | **GND** | **GND** | Ground bersama |
 | **RST** | **GPIO 22** | Reset Pin |
 | **SDA / SS** | **GPIO 21** | SPI Slave Select |

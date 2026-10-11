@@ -1,4 +1,4 @@
-# 🏍️ Sistem Parkir Pintar Berbasis IoT dan Visi Komputer Menggunakan Metode YOLO
+# Sistem Parkir Pintar Berbasis IoT dan Visi Komputer Menggunakan Metode YOLO
 
 [![Live Web Dashboard](https://img.shields.io/badge/Live_Dashboard-taparkir--4d34d.web.app-blue?style=for-the-badge&logo=firebase)](https://taparkir-4d34d.web.app/)
 [![Python Version](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
@@ -11,13 +11,13 @@
 
 Aplikasi desktop cerdas berbasis **Windows** untuk otomasi gerbang parkir **kendaraan bermotor roda dua (sepeda motor)** dengan sistem **Autentikasi Ganda (*Dual-Layer Authentication*)**: memvalidasi identitas pengguna melalui **UID e-KTP (RFID RC522 + ESP32)** dengan identitas fisik kendaraan melalui **Pengenalan Pelat Nomor (YOLOv8 Nano + CNN OCR + FSM Rule-Based Correction)**, didukung arsitektur **Hybrid Database** (Offline-First SQLite lokal + Cloud Firebase Realtime Database) serta **Website Dashboard IoT**.
 
-🌐 **Akses Dashboard Web Real-time:** [https://taparkir-4d34d.web.app/](https://taparkir-4d34d.web.app/)
+**Akses Dashboard Web Real-time:** [https://taparkir-4d34d.web.app/](https://taparkir-4d34d.web.app/)
 
 ---
 
-## 📌 Daftar Isi
-- [Live Web Monitoring](#-live-web-monitoring)
-- [Perancangan & Arsitektur Sistem (Bab 3 Skripsi)](#-perancangan--arsitektur-sistem-bab-3-skripsi)
+## Daftar Isi
+- [Live Web Monitoring](#live-web-monitoring)
+- [Perancangan & Arsitektur Sistem (Bab 3 Skripsi)](#perancangan--arsitektur-sistem-bab-3-skripsi)
   - [Blok Diagram Sistem Keseluruhan](#1-blok-diagram-sistem-keseluruhan-gambar-31-skripsi)
   - [Alur Komunikasi Perangkat Keras](#2-alur-perangkat-keras-gambar-32-skripsi)
   - [Diagram Alir Sistem Utama (Flowchart)](#3-diagram-alir-sistem-utama-gambar-33-skripsi)
@@ -25,26 +25,26 @@ Aplikasi desktop cerdas berbasis **Windows** untuk otomasi gerbang parkir **kend
   - [Arsitektur Model CNN untuk Klasifikasi Karakter](#5-arsitektur-model-cnn-untuk-klasifikasi-karakter-gambar-37-skripsi)
   - [Diagram Alir Rule-Based Correction](#6-diagram-alir-rule-based-correction-gambar-38-skripsi)
   - [Struktur Database Firebase](#7-struktur-database-firebase-gambar-39-skripsi)
-- [Angka-Angka Hasil Pengujian Sistem (Bab 4 Skripsi)](#-angka-angka-hasil-pengujian-sistem-bab-4-skripsi)
+- [Angka-Angka Hasil Pengujian Sistem (Bab 4 Skripsi)](#angka-angka-hasil-pengujian-sistem-bab-4-skripsi)
   - [Hasil Pelatihan YOLOv8 Nano](#1-hasil-pengujian-model-yolov8-nano-gambar-48-skripsi)
   - [Hasil Pelatihan OCR CNN](#2-hasil-pengujian-model-ocr-cnn-gambar-410-skripsi)
   - [Hasil Pengujian Terintegrasi Lapangan](#3-hasil-pengujian-sistem-terintegrasi-lapangan-tabel-45-skripsi)
   - [Hasil Pengujian Respons RFID RC522](#4-hasil-pengujian-modul-rfid-rc522--esp32-tabel-41--42-skripsi)
   - [Hasil Pengujian Integrasi Autentikasi Ganda](#5-hasil-pengujian-integrasi-autentikasi-ganda-tabel-46-skripsi)
-- [Struktur Repositori](#-struktur-repositori)
-- [Kebutuhan Perangkat](#-kebutuhan-perangkat)
-- [Panduan Instalasi & Penggunaan](#-panduan-instalasi--penggunaan)
-- [Konfigurasi Firebase](#-konfigurasi-firebase)
-- [Integrasi Perangkat Keras ESP32](#-integrasi-perangkat-keras-esp32)
-- [Lisensi](#-lisensi)
+- [Struktur Repositori](#struktur-repositori)
+- [Kebutuhan Perangkat](#kebutuhan-perangkat)
+- [Panduan Instalasi & Penggunaan](#panduan-instalasi--penggunaan)
+- [Konfigurasi Firebase](#konfigurasi-firebase)
+- [Integrasi Perangkat Keras ESP32](#integrasi-perangkat-keras-esp32)
+- [Lisensi](#lisensi)
 
 ---
 
-## 🌐 Live Web Monitoring
+## Live Web Monitoring
 
 Sistem terhubung langsung ke cloud untuk kebutuhan monitoring jarak jauh tanpa mengganggu kecepatan operasional gerbang lokal:
 
-👉 **URL Dashboard Resmi:** [https://taparkir-4d34d.web.app/](https://taparkir-4d34d.web.app/)
+**URL Dashboard Resmi:** [https://taparkir-4d34d.web.app/](https://taparkir-4d34d.web.app/)
 
 Fitur pemantauan pada website:
 1. **Log Status & Peringatan Keamanan**: Merekam rekam jejak insiden penolakan akses (seperti ketidakcocokan UID e-KTP dengan pelat nomor sepeda motor).
@@ -53,7 +53,7 @@ Fitur pemantauan pada website:
 
 ---
 
-## 🏛️ Perancangan & Arsitektur Sistem (Bab 3 Skripsi)
+## Perancangan & Arsitektur Sistem (Bab 3 Skripsi)
 
 Seluruh arsitektur, diagram blok, alur perangkat keras, flowchart, dan rancangan model di bawah ini diambil langsung dari dokumen resmi Skripsi:
 
@@ -162,7 +162,7 @@ Struktur data NoSQL pada Firebase Realtime Database dibagi menjadi 3 node utama:
 
 ---
 
-## 📊 Angka-Angka Hasil Pengujian Sistem (Bab 4 Skripsi)
+## Angka-Angka Hasil Pengujian Sistem (Bab 4 Skripsi)
 
 Seluruh angka hasil pengujian di bawah ini diambil langsung dari hasil evaluasi resmi pada laporan Tugas Akhir:
 
@@ -240,7 +240,7 @@ Seluruh angka hasil pengujian di bawah ini diambil langsung dari hasil evaluasi 
 
 ---
 
-## 📁 Struktur Repositori
+## Struktur Repositori
 
 ```text
 SistemParkir/
@@ -297,7 +297,7 @@ SistemParkir/
 
 ---
 
-## 💻 Kebutuhan Perangkat
+## Kebutuhan Perangkat
 
 ### Software
 - **Sistem Operasi**: Windows 10 / 11 (64-bit).
@@ -313,7 +313,7 @@ SistemParkir/
 
 ---
 
-## 🚀 Panduan Instalasi & Penggunaan
+## Panduan Instalasi & Penggunaan
 
 ### 1. Clone Repositori
 ```powershell
@@ -348,7 +348,7 @@ python main_gui.py
 
 ---
 
-## 🔐 Konfigurasi Firebase
+## Konfigurasi Firebase
 
 Proyek ini menggunakan **Firebase Realtime Database** untuk sinkronisasi data cloud.
 
@@ -356,17 +356,17 @@ Proyek ini menggunakan **Firebase Realtime Database** untuk sinkronisasi data cl
 2. Buat **Realtime Database** pada lokasi `asia-southeast1` (Singapura).
 3. Buka **Project Settings** > **Service accounts**.
 4. Klik **Generate new private key**, lalu simpan file JSON tersebut dengan nama `kunci-firebase.json` di root folder aplikasi.
-5. ⚠️ **PERINGATAN KEAMANAN:** File `kunci-firebase.json` asli secara otomatis diabaikan oleh `.gitignore` sehingga aman dari kebocoran ke publik.
+5. **Catatan Keamanan:** File `kunci-firebase.json` asli secara otomatis diabaikan oleh `.gitignore` sehingga aman dari kebocoran ke publik.
 
 ---
 
-## 🔌 Integrasi Perangkat Keras ESP32
+## Integrasi Perangkat Keras ESP32
 
 Hubungkan pin modul **MFRC522** ke **ESP32** sesuai tabel berikut:
 
 | Pin RC522 | Pin ESP32 | Keterangan |
 |-----------|-----------|------------|
-| 3.3V      | 3.3V      | ⚠️ **Jangan hubungkan ke 5V!** |
+| 3.3V      | 3.3V      | *Perhatian: Jangan hubungkan ke 5V!* |
 | RST       | GPIO 22   | Reset Pin |
 | GND       | GND       | Ground Bersama |
 | MISO      | GPIO 19   | VSPI MISO |
@@ -378,6 +378,6 @@ Buka sketch pada `arduino/esp32_rfid/esp32_rfid.ino` di Arduino IDE, lalu upload
 
 ---
 
-## 📄 Lisensi
+## Lisensi
 
 Proyek ini dilisensikan di bawah lisensi **MIT License** - lihat berkas [LICENSE](LICENSE) untuk rincian lengkap.
