@@ -20,10 +20,11 @@ Aplikasi desktop cerdas berbasis **Windows** untuk otomasi gerbang parkir **kend
 - [Perancangan & Arsitektur Sistem (Bab 3 Skripsi)](#-perancangan--arsitektur-sistem-bab-3-skripsi)
   - [Blok Diagram Sistem Keseluruhan](#1-blok-diagram-sistem-keseluruhan-gambar-31-skripsi)
   - [Alur Komunikasi Perangkat Keras](#2-alur-perangkat-keras-gambar-32-skripsi)
-  - [Diagram Alir Sistem Utama](#3-diagram-alir-sistem-utama-gambar-33-skripsi)
-  - [Pipeline Pemrosesan Citra & Arsitektur CNN](#4-pipeline-pemrosesan-citra--arsitektur-cnn-gambar-36--37-skripsi)
-  - [Diagram Alir Rule-Based Correction](#5-diagram-alir-rule-based-correction-gambar-38-skripsi)
-  - [Struktur Database Firebase](#6-struktur-database-firebase-gambar-39-skripsi)
+  - [Diagram Alir Sistem Utama (Flowchart)](#3-diagram-alir-sistem-utama-gambar-33-skripsi)
+  - [Alur Pra-pemrosesan, Segmentasi, dan Pengenalan Karakter CNN](#4-alur-pra-pemrosesan-segmentasi-dan-pengenalan-karakter-cnn-gambar-36-skripsi)
+  - [Arsitektur Model CNN untuk Klasifikasi Karakter](#5-arsitektur-model-cnn-untuk-klasifikasi-karakter-gambar-37-skripsi)
+  - [Diagram Alir Rule-Based Correction](#6-diagram-alir-rule-based-correction-gambar-38-skripsi)
+  - [Struktur Database Firebase](#7-struktur-database-firebase-gambar-39-skripsi)
 - [Angka-Angka Hasil Pengujian Sistem (Bab 4 Skripsi)](#-angka-angka-hasil-pengujian-sistem-bab-4-skripsi)
   - [Hasil Pelatihan YOLOv8 Nano](#1-hasil-pengujian-model-yolov8-nano-gambar-48-skripsi)
   - [Hasil Pelatihan OCR CNN](#2-hasil-pengujian-model-ocr-cnn-gambar-410-skripsi)
@@ -60,40 +61,11 @@ Seluruh arsitektur, diagram blok, alur perangkat keras, flowchart, dan rancangan
 
 Menggambarkan hubungan antara perangkat masukan (*input*), unit pemrosesan utama (*proses*), penyimpanan data hybrid (*database*), dan media keluaran (*output*):
 
-![Blok Diagram Sistem](assets/images/Gambar_3_1_Blok_Diagram.png)
+<p align="center">
+  <img src="assets/images/Gambar_3_1_Blok_Diagram.png" alt="Gambar 3.1 Blok Diagram Sistem" width="750"/>
+</p>
+
 *Gambar 3.1: Blok Diagram Sistem Keseluruhan*
-
-```mermaid
-flowchart LR
-    subgraph INPUT["INPUT"]
-        Cam["WebCam (Citra Motor)"]
-        RFID["RFID RC522 (e-KTP)"]
-    end
-
-    subgraph PROSES["PROSES"]
-        CPU["Unit Pemrosesan Utama\n(Laptop)"]
-    end
-
-    subgraph DATABASE["DATABASE HYBRID"]
-        DBLoc[("Database Lokal\n(SQLite)")]
-        DBCli[("Cloud Database\n(Firebase RTDB)")]
-        DBLoc <-->|Sinkronisasi Data| DBCli
-    end
-
-    subgraph OUTPUT["OUTPUT"]
-        GUI["Aplikasi PyQt6"]
-        SPK["Speaker (Notifikasi Suara)"]
-        WEB["Website Dashboard"]
-    end
-
-    Cam --> CPU
-    RFID --> CPU
-    CPU <--> DBLoc
-    CPU <--> DBCli
-    CPU --> GUI
-    CPU --> SPK
-    DBCli --> WEB
-```
 
 ---
 
@@ -101,7 +73,10 @@ flowchart LR
 
 Menunjukkan integrasi komunikasi fisik antara kartu e-KTP, sensor pembaca RFID, mikrokontroler, kamera, dan komputer:
 
-![Alur Perangkat Keras](assets/images/Gambar_3_2_Alur_Perangkat_Keras.png)
+<p align="center">
+  <img src="assets/images/Gambar_3_2_Alur_Perangkat_Keras.png" alt="Gambar 3.2 Alur Perangkat Keras" width="750"/>
+</p>
+
 *Gambar 3.2: Alur Komunikasi Antarperangkat Keras*
 
 - **Kartu e-KTP ke Modul RFID RC522**: Gelombang Radio Frekuensi RF 13,56 MHz (ISO/IEC 14443A).
@@ -116,41 +91,31 @@ Menunjukkan integrasi komunikasi fisik antara kartu e-KTP, sensor pembaca RFID, 
 
 Menggambarkan alur logika eksekusi perangkat lunak dari mulai deteksi kendaraan hingga keputusan pembukaan gerbang:
 
-![Diagram Alir Sistem Utama](assets/images/Gambar_3_3_Diagram_Alir_Sistem_Utama.png)
-*Gambar 3.3: Diagram Alir Sistem Utama (Flowchart)*
+<p align="center">
+  <img src="assets/images/Gambar_3_3_Diagram_Alir_Sistem_Utama.png" alt="Gambar 3.3 Diagram Alir Sistem Utama" width="500"/>
+</p>
 
-```mermaid
-flowchart TD
-    Start([Mulai]) --> Tap["Pengendara Melakukan Tap e-KTP"]
-    Tap --> ReadRFID["Baca UID e-KTP Pada RFID RC522"]
-    ReadRFID --> Capture["Tangkap Citra Sepeda Motor (WebCam)"]
-    Capture --> YOLO["Lokalisasi Pelat Nomor dengan YOLOv8 Nano"]
-    YOLO --> OCR["Segmentasi dan Klasifikasi Karakter dengan CNN"]
-    OCR --> VoteCheck{"Apakah Voting Karakter Cocok?\n(Minimal >= 2 frame)"}
-    
-    VoteCheck -- Tidak --> Deny["⛔ Akses Ditolak"]
-    VoteCheck -- Ya --> DBCheck{"Validasi Database SQLite\n(Status Masuk / Keluar)"}
-    
-    DBCheck -- Tidak Sesuai --> Deny
-    DBCheck -- Sesuai --> Grant["Tampilkan Data di GUI & Output Suara\n'Akses Diterima'"]
-    
-    Deny --> End([Selesai])
-    Grant --> LogDB["Catat Log Database Lokal & Sinkronisasi Cloud"]
-    LogDB --> End
-```
+*Gambar 3.3: Diagram Alir Sistem Utama (Flowchart)*
 
 ---
 
-### 4. Pipeline Pemrosesan Citra & Arsitektur CNN (Gambar 3.6 & 3.7 Skripsi)
+### 4. Alur Pra-pemrosesan, Segmentasi, dan Pengenalan Karakter CNN (Gambar 3.6 Skripsi)
 
-Tahap pengenalan karakter tidak dilakukan terhadap citra pelat secara utuh, melainkan melalui pipeline bertahap:
+Tahap pengenalan karakter dilakukan melalui pipeline bertahap:
 1. **Langkah 1: Citra Input** (Hasil crop ROI dari bounding box YOLOv8).
 2. **Langkah 2: Binerisasi** (Konversi Grayscale, CLAHE pencahayaan, Gaussian Blur, dan Otsu Thresholding).
 3. **Langkah 3: Segmentasi** (Ekstraksi kontur karakter dengan auto-deskewing PCA & penyelarasan sumbu-Y).
 4. **Langkah 4: Hasil Klasifikasi** (Inferensi CNN 36 kelas karakter alfanumerik `0-9` dan `A-Z`).
 
-![Alur Pengenalan Karakter CNN](assets/images/Gambar_3_6_Alur_Pengenalan_Karakter_CNN.png)
+<p align="center">
+  <img src="assets/images/Gambar_3_6_Alur_Pengenalan_Karakter_CNN.png" alt="Gambar 3.6 Alur Pra-pemrosesan, Segmentasi, dan Pengenalan Karakter CNN" width="750"/>
+</p>
+
 *Gambar 3.6: Alur Pra-pemrosesan, Segmentasi, dan Pengenalan Karakter CNN*
+
+---
+
+### 5. Arsitektur Model CNN untuk Klasifikasi Karakter (Gambar 3.7 Skripsi)
 
 Arsitektur model CNN yang digunakan:
 - Input citra grayscale 28 × 28 × 1 kanal.
@@ -159,27 +124,36 @@ Arsitektur model CNN yang digunakan:
 - **Flatten** (1.600 vektor fitur) $\rightarrow$ **Dense** (128 neuron + ReLU) $\rightarrow$ **Dropout (0.5)**.
 - **Output Layer**: Dense 36 neuron dengan fungsi aktivasi **Softmax**.
 
-![Arsitektur Model CNN](assets/images/Gambar_3_7_Arsitektur_Model_CNN.jpg)
+<p align="center">
+  <img src="assets/images/Gambar_3_7_Arsitektur_Model_CNN.png" alt="Gambar 3.7 Arsitektur Model CNN untuk Klasifikasi Karakter" width="750"/>
+</p>
+
 *Gambar 3.7: Arsitektur Model CNN untuk Klasifikasi Karakter*
 
 ---
 
-### 5. Diagram Alir Rule-Based Correction (Gambar 3.8 Skripsi)
+### 6. Diagram Alir Rule-Based Correction (Gambar 3.8 Skripsi)
 
 Memperbaiki kesalahan klasifikasi visual huruf dan angka yang mirip berdasarkan struktur Tanda Nomor Kendaraan Bermotor (TNKB) Indonesia (Kode Wilayah $\rightarrow$ Nomor Registrasi $\rightarrow$ Huruf Seri):
 
-![Diagram Alir Rule-Based Correction](assets/images/Gambar_3_8_Diagram_Alir_Rule_Based_Correction.jpg)
+<p align="center">
+  <img src="assets/images/Gambar_3_8_Diagram_Alir_Rule_Based_Correction.png" alt="Gambar 3.8 Diagram Alir Rule-Based Correction" width="750"/>
+</p>
+
 *Gambar 3.8: Diagram Alir Logika Rule-Based Correction*
 
 - Dilengkapi **Sensor Kontur Pinggang (*Waistline Sensor*)** untuk membedakan karakter berlekuk `B` vs `8` dan `O` vs `0` berdasarkan profil tepi kanan biner.
 
 ---
 
-### 6. Struktur Database Firebase (Gambar 3.9 Skripsi)
+### 7. Struktur Database Firebase (Gambar 3.9 Skripsi)
 
 Struktur data NoSQL pada Firebase Realtime Database dibagi menjadi 3 node utama:
 
-![Struktur Tabel Firebase](assets/images/Gambar_3_9_Struktur_Tabel_Firebase.jpg)
+<p align="center">
+  <img src="assets/images/Gambar_3_9_Struktur_Tabel_Firebase.png" alt="Gambar 3.9 Struktur Tabel Firebase" width="650"/>
+</p>
+
 *Gambar 3.9: Struktur Node Data pada Firebase Realtime Database*
 
 - `log_keamanan`: Menyimpan insiden penolakan (`<id_log>`, `foto_url`, `keterangan`, `plat_nomor`, `rfid_uid`, `status`, `waktu`).
@@ -194,7 +168,10 @@ Seluruh angka hasil pengujian di bawah ini diambil langsung dari hasil evaluasi 
 
 ### 1. Hasil Pengujian Model YOLOv8 Nano (Gambar 4.8 Skripsi)
 
-![Grafik Pelatihan YOLOv8](assets/images/Grafik_Pelatihan_YOLOv8.png)
+<p align="center">
+  <img src="assets/images/Grafik_Pelatihan_YOLOv8.png" alt="Gambar 4.8 Grafik Hasil Pelatihan Model YOLOv8" width="750"/>
+</p>
+
 *Gambar 4.8: Grafik Box Loss & Mean Average Precision (mAP) YOLOv8 Nano*
 
 | Metrik Evaluasi | Nilai Numerik | Persentase | Keterangan |
@@ -211,7 +188,10 @@ Seluruh angka hasil pengujian di bawah ini diambil langsung dari hasil evaluasi 
 
 ### 2. Hasil Pengujian Model OCR CNN (Gambar 4.10 Skripsi)
 
-![Grafik Pelatihan OCR CNN](assets/images/Grafik_Pelatihan_OCR_CNN.jpg)
+<p align="center">
+  <img src="assets/images/Grafik_Pelatihan_OCR_CNN.png" alt="Gambar 4.10 Grafik Hasil Pelatihan Model OCR CNN" width="750"/>
+</p>
+
 *Gambar 4.10: Grafik Akurasi & Loss Pelatihan vs Validasi Model CNN*
 
 | Metrik Evaluasi | Nilai Numerik | Persentase | Keterangan |
@@ -241,7 +221,7 @@ Seluruh angka hasil pengujian di bawah ini diambil langsung dari hasil evaluasi 
 | :--- | :---: | :--- |
 | **Jumlah Sampel UID e-KTP Berbeda** | `11 UID` | Pengujian multi-kartu identitas e-KTP |
 | **Total Pengujian Berulang** | `55 kali` | Setiap kartu diuji sebanyak 5 kali |
-| **Pembacaan Berhasil** | `55 kali (100,00%)` | Seluruh pembacaan sukses tanpa kegagalan |
+| **Pembacaan Berhasil** | `55 kali (100,00%)` | Seluruh pembacaan hardware berhasil |
 | **Pembacaan Gagal** | `0 kali (0,00%)` | Keandalan hardware sempurna |
 | **Waktu Respons Minimum** | `5,00 ms` | Kecepatan pembacaan tercepat |
 | **Waktu Respons Maksimum** | `6,00 ms` | Kecepatan pembacaan terlambat |
@@ -298,11 +278,11 @@ SistemParkir/
 │       ├── Gambar_3_2_Alur_Perangkat_Keras.png
 │       ├── Gambar_3_3_Diagram_Alir_Sistem_Utama.png
 │       ├── Gambar_3_6_Alur_Pengenalan_Karakter_CNN.png
-│       ├── Gambar_3_7_Arsitektur_Model_CNN.jpg
-│       ├── Gambar_3_8_Diagram_Alir_Rule_Based_Correction.jpg
-│       ├── Gambar_3_9_Struktur_Tabel_Firebase.jpg
+│       ├── Gambar_3_7_Arsitektur_Model_CNN.png
+│       ├── Gambar_3_8_Diagram_Alir_Rule_Based_Correction.png
+│       ├── Gambar_3_9_Struktur_Tabel_Firebase.png
 │       ├── Grafik_Pelatihan_YOLOv8.png
-│       └── Grafik_Pelatihan_OCR_CNN.jpg
+│       └── Grafik_Pelatihan_OCR_CNN.png
 │
 ├── scripts/                            # Skrip penelitian Bab 4 Skripsi
 │   ├── README.md                       # Dokumentasi skrip penelitian
